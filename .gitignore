@@ -1,4 +1,27 @@
-node_modules
-dist
-build
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files
 .env
+.env.local
+.env.production
+.env.development
+
+# Build files
+dist/
+build/
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# VS Code
+.vscode/
