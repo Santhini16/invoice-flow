@@ -3,7 +3,7 @@ require('dotenv').config();
 
 let transporter;
 
-const getTransporter = () => {
+const getTransporter = async () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
