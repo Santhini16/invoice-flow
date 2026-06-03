@@ -353,7 +353,17 @@ const send = async (req, res, next) => {
         publicLink,
         companyName: inv.company_name,
       });
-    } else if (method === 'whatsapp') {
+      console.log("EMAIL RESULT:", result);
+
+  if (!result.success) {
+    return res.status(500).json({
+      success: false,
+      message: "Email sending failed",
+      error: result.error,
+    });
+  }
+    } 
+    else if (method === 'whatsapp') {
       result = await sendWhatsAppMessage({
         phone: inv.client_phone,
         invoiceNumber: inv.invoice_number,

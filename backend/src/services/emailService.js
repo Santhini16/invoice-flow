@@ -18,6 +18,7 @@ const getTransporter = async () => {
       socketTimeout: 30000,
     });
     await transporter.verify();
+    console.log("SMTP Connected");
   }
   return transporter;
 };
@@ -72,6 +73,9 @@ const sendInvoiceEmail = async ({ to, clientName, invoiceNumber, amount, dueDate
   `;
 
   try {
+    console.log("SMTP_USER:", process.env.SMTP_USER);
+  console.log("SMTP_HOST:", process.env.SMTP_HOST);
+  console.log("Sending email to:", to);
     const transporter = await getTransporter();
 
   await transporter.sendMail({
