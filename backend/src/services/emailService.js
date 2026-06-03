@@ -13,7 +13,11 @@ const getTransporter = () => {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+       connectionTimeout: 30000,
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
+    await transporter.verify();
   }
   return transporter;
 };
@@ -68,7 +72,9 @@ const sendInvoiceEmail = async ({ to, clientName, invoiceNumber, amount, dueDate
   `;
 
   try {
-    await getTransporter().sendMail({
+    const transporter = await getTransporter();
+
+  await transporter.sendMail({
       from: `"${process.env.FROM_NAME || companyName}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to,
       subject: `Invoice ${invoiceNumber} from ${companyName} — ₹${amount}`,
@@ -110,7 +116,9 @@ const sendPaymentReceipt = async ({ to, clientName, invoiceNumber, amount, compa
   `;
 
   try {
-    await getTransporter().sendMail({
+    const transporter = await getTransporter();
+
+  await transporter.sendMail({
       from: `"${companyName}" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to,
       subject: `Payment Receipt — ${invoiceNumber}`,
