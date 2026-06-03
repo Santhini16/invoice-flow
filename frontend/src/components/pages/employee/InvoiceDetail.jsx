@@ -35,7 +35,9 @@ export default function InvoiceDetail() {
     if (method === "whatsapp") {
       let phone = invoice.client?.phone || "";
       phone = phone.replace(/\D/g, "");
-
+      if (!phone.startsWith("91")) {
+  phone = "91" + phone;
+}
       const message = `Hello ${invoice.client?.name},
 
 Your Invoice ${invoice.invoiceNumber}
