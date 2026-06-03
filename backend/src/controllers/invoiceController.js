@@ -385,7 +385,13 @@ const send = async (req, res, next) => {
     });
 
     res.json({ success: true, message: `Invoice sent via ${method}`, publicLink, ...result });
-  } catch (err) { next(err); }
+  } catch (err) {
+  console.error("FULL EMAIL ERROR:", err);
+  return {
+    success: false,
+    error: err.message,
+  };
+}
 };
 
 // DELETE /api/invoices/:id
