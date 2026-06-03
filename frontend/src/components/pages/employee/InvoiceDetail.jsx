@@ -4,26 +4,8 @@ import { Download, Send, Edit, ArrowLeft, Mail, MessageCircle, Copy, CheckCircle
 import { invoiceAPI } from '../../../services/api';
 import { formatCurrency, formatDate, invoiceStatusConfig, timeAgo } from '../../../utils/helpers';
 import toast from 'react-hot-toast';
-
-const DEMO_INVOICE = {
-  id: '1', invoiceNumber: 'INV-2402-0012', status: 'sent',
-  issueDate: '2024-02-10', dueDate: '2024-03-10',
-  client: { name: 'Tata Consultancy Services', email: 'billing@tcs.com', phone: '+91 22 6778 9000', address: 'TCS House, Mumbai 400001', gstin: '27AAACT2727Q1ZW' },
-  company: { name: 'InvoiceFlow Demo Pvt Ltd', address: '123 Business Park, Andheri East, Mumbai 400069', gstin: '27AABCI1234A1ZK' },
-  items: [
-    { description: 'Web Development Services', quantity: 1, price: 250000, hsn: '998314', unit: 'Nos' },
-    { description: 'UI/UX Design Consultation', quantity: 2, price: 75000, hsn: '998315', unit: 'Nos' },
-    { description: 'Monthly Maintenance', quantity: 1, price: 15000, hsn: '998313', unit: 'Nos' },
-  ],
-  gstRate: 18, gstType: 'IGST', discount: 5,
-  notes: 'Payment due within 30 days. Thank you for your business!',
-  publicToken: 'demo-token-abc123',
-  activities: [
-    { action: 'Created', user: 'Rahul Mehta', at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
-    { action: 'Sent via Email', user: 'Rahul Mehta', at: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString() },
-    { action: 'Viewed by client', user: 'System', at: new Date(Date.now() - 1000 * 60 * 60 * 22).toISOString() },
-  ],
-};
+const API_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 export default function InvoiceDetail() {
   const { id } = useParams();
@@ -81,17 +63,19 @@ Pay here: ${publicLink}`;
     toast.success('Client link copied!');
   };
 const printInvoice = () => window.print();
-  const handleDownload = async () => {
+const handleDownload = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:5000/api/invoices/${id}/pdf`, {
+    const res = await fetch(`${API_URL}/invoices/${id}/pdf`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!res.ok) throw new Error("Failed");
+    if (!res.ok) {
+      throw new Error("Failed to download PDF");
+    }
 
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -99,15 +83,18 @@ const printInvoice = () => window.print();
     const a = document.createElement("a");
     a.href = url;
     a.download = `${invoice.invoiceNumber}.pdf`;
+    document.body.appendChild(a);
     a.click();
+    a.remove();
 
     window.URL.revokeObjectURL(url);
+
+    toast.success("PDF downloaded");
   } catch (err) {
     console.error(err);
     toast.error("PDF download failed");
   }
 };
-
   return (
     <div className="max-w-4xl mx-auto space-y-4 md:space-y-5 px-3 sm:px-4 md:px-0 animate-fade-in">
       {/* Top bar - Responsive */}
