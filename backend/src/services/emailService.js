@@ -7,7 +7,7 @@ const getTransporter = async () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT) || 587,
+      port: parseInt(process.env.SMTP_PORT) || 465,
       secure: false,
       auth: {
         user: process.env.SMTP_USER,
@@ -75,6 +75,8 @@ const sendInvoiceEmail = async ({ to, clientName, invoiceNumber, amount, dueDate
   try {
     console.log("SMTP_USER:", process.env.SMTP_USER);
   console.log("SMTP_HOST:", process.env.SMTP_HOST);
+  console.log("SMTP_PASS EXISTS:", !!process.env.SMTP_PASS);
+console.log("SMTP_PORT:", process.env.SMTP_PORT);
   console.log("Sending email to:", to);
     const transporter = await getTransporter();
 
