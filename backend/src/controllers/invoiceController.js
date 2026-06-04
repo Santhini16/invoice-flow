@@ -353,17 +353,7 @@ const send = async (req, res, next) => {
         publicLink,
         companyName: inv.company_name,
       });
-      console.log("EMAIL RESULT:", result);
-
-  if (!result.success) {
-    return res.status(500).json({
-      success: false,
-      message: "Email sending failed",
-      error: result.error,
-    });
-  }
-    } 
-    else if (method === 'whatsapp') {
+    } else if (method === 'whatsapp') {
       result = await sendWhatsAppMessage({
         phone: inv.client_phone,
         invoiceNumber: inv.invoice_number,
@@ -385,13 +375,7 @@ const send = async (req, res, next) => {
     });
 
     res.json({ success: true, message: `Invoice sent via ${method}`, publicLink, ...result });
-  } catch (err) {
-  console.error("FULL EMAIL ERROR:", err);
-  return {
-    success: false,
-    error: err.message,
-  };
-}
+  } catch (err) { next(err); }
 };
 
 // DELETE /api/invoices/:id
