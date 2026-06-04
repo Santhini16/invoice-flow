@@ -29,64 +29,42 @@ const USE_RESEND   = PROVIDER === 'resend'   || !!process.env.RESEND_API_KEY;
 const USE_SENDGRID = PROVIDER === 'sendgrid' || !!process.env.SENDGRID_API_KEY;
 
 // ── Nodemailer transporter (Gmail / SMTP) ────────────────────────────────────
-let _transporter = null;
-_transporter.verify((err, success) => {
-  if (err) {
-    console.error("SMTP FULL ERROR:", err);
-  } else {
-    console.log("SMTP READY");
-  }
-});
+let transporter = null;
 const getTransporter = () => {
-  // Re-create every time so we always pick up env vars (important on Render cold starts)
-  if (_transporter) return _transporter;
-
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!user || !pass) {
-    console.warn('[email] SMTP_USER or SMTP_PASS not set — email will be logged only');
-    return null;
-  }
-
-  _transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST    || 'smtp.gmail.com',
-    port:   465,
-    secure: true, // true for port 465, false for 587
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: false,
     auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-    // Required for Gmail to avoid "self-signed certificate" errors on some hosts
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+
     tls: {
       rejectUnauthorized: false,
     },
-    // Generous timeouts for Render's cold starts
-    connectionTimeout: 30000,
-    greetingTimeout:   30000,
-    socketTimeout:     30000,
   });
-
-  return _transporter;
 };
 
 // ── Verify SMTP connection (call once at startup) ────────────────────────────
 const verifyConnection = async () => {
-  if (USE_RESEND || USE_SENDGRID) {
-    console.log(`[email] Provider: ${USE_RESEND ? 'Resend' : 'SendGrid'}`);
-    return true;
-  }
-  const t = getTransporter();
-  if (!t) return false;
   try {
-    await t.verify();
-    console.log('[email] SMTP connection verified ✓');
-    return true;
+    const transporter = getTransporter();
+
+    console.log("SMTP_USER:", process.env.SMTP_USER);
+    console.log("SMTP_HOST:", process.env.SMTP_HOST);
+    console.log("SMTP_PORT:", process.env.SMTP_PORT);
+
+    await transporter.verify();
+
+    console.log("[email] SMTP connected successfully");
   } catch (err) {
-    console.error('[email] SMTP verify failed:', err.message);
-    console.error('[email] Check: SMTP_USER, SMTP_PASS (must be Gmail App Password, not your Gmail password)');
-    _transporter = null; // reset so next call retries
-    return false;
+    console.error("[email] SMTP verify failed:", err);
+    throw err;
   }
 };
 
