@@ -353,6 +353,12 @@ const send = async (req, res, next) => {
         publicLink,
         companyName: inv.company_name,
       });
+      if (!result.success) {
+  return res.status(500).json({
+    success: false,
+    message: result.error
+  });
+}
     } else if (method === 'whatsapp') {
       result = await sendWhatsAppMessage({
         phone: inv.client_phone,

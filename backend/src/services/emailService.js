@@ -45,7 +45,7 @@ const getTransporter = () => {
 
   _transporter = nodemailer.createTransport({
     host:   process.env.SMTP_HOST    || 'smtp.gmail.com',
-    port:   parseInt(process.env.SMTP_PORT || '587'),
+    port:   parseInt(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for 587
     auth:   { user, pass },
     // Required for Gmail to avoid "self-signed certificate" errors on some hosts
