@@ -10,24 +10,24 @@ const errorHandler = require('./src/middleware/errorHandler');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
+app.set('trust proxy', 1);
 // ── Security ────────────────────────────────────────────────────────────────
 app.use(helmet());
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
   .split(',').map(s => s.trim());
 
+
 app.use(cors({
-  origin: (origin, cb) => {
-    // Allow requests with no origin (mobile apps, curl, Postman)
-    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      return cb(null, true);
-    }
-    cb(new Error(`CORS: ${origin} not allowed`));
-  },
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:3001',
+  ],
   credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 
 // ── Rate limiting ────────────────────────────────────────────────────────────
 app.use('/api/', rateLimit({
