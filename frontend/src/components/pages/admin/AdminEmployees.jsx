@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Plus, Search, MoreVertical, Mail, Phone, Edit, Trash2, X, Shield, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Search, MoreVertical, Mail, Phone, Edit, Trash2, X, Shield, ToggleLeft, ToggleRight, UserCheck } from 'lucide-react';
 import { employeeAPI } from '../../../services/api';
 import { formatDate } from '../../../utils/helpers';
 import toast from 'react-hot-toast';
