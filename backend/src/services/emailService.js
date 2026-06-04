@@ -45,16 +45,19 @@ const getTransporter = () => {
 
   _transporter = nodemailer.createTransport({
     host:   process.env.SMTP_HOST    || 'smtp.gmail.com',
-    port:   parseInt(process.env.SMTP_PORT || 587),
-    secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for 587
-    auth:   { user, pass },
+    port:   587,
+    secure: false, // true for port 465, false for 587
+    auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  },
     // Required for Gmail to avoid "self-signed certificate" errors on some hosts
     tls: {
       rejectUnauthorized: false,
     },
     // Generous timeouts for Render's cold starts
-    connectionTimeout: 10000,
-    greetingTimeout:   10000,
+    connectionTimeout: 30000,
+    greetingTimeout:   30000,
     socketTimeout:     30000,
   });
 
