@@ -30,7 +30,13 @@ const USE_SENDGRID = PROVIDER === 'sendgrid' || !!process.env.SENDGRID_API_KEY;
 
 // ── Nodemailer transporter (Gmail / SMTP) ────────────────────────────────────
 let _transporter = null;
-
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("SMTP FULL ERROR:", err);
+  } else {
+    console.log("SMTP READY");
+  }
+});
 const getTransporter = () => {
   // Re-create every time so we always pick up env vars (important on Render cold starts)
   if (_transporter) return _transporter;
